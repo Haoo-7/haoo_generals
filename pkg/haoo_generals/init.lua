@@ -4,7 +4,7 @@ extension.extensionName = "haoo_generals"
 extension:loadSkillSkelsByPath("./packages/haoo_generals/pkg/haoo_generals/skills")
 
 Fk:loadTranslationTable {
-  ["haoo_generals"] = "Haoo自制武将",
+  ["haoo_generals"] = "铁群新设",
   ["haoo"] = "铁",
   ["zheng"] = "蒸",
 
