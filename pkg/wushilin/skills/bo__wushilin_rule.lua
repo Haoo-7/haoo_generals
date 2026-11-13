@@ -9,7 +9,6 @@ skill:addEffect(fk.TurnStart, {
   can_refresh = function(self, event, target, player, data) return target == player end,
   on_refresh = function(self, event, target, player, data)
     W.beginTurn(player.room, player)
-    W.settleBackwater(player)
   end,
 })
 
@@ -87,6 +86,8 @@ skill:addEffect("invalidity", {
   global = true,
   invalidity_func = function(self, player, target_skill)
     local skel = target_skill:getSkeleton()
+    if skel and skel.name ~= skill.name and player:getMark(W.silenced) > 0 and
+      target_skill:isPlayerSkill(player) then return true end
     if skel and table.contains(player:getTableMark(W.granted), skel.name) and not player:hasSkill("bo__jige") then return true end
   end,
 })
@@ -96,7 +97,7 @@ Fk:loadTranslationTable {
   ["@@bo__dansi-inhand"] = "明置",
   ["@bo__dansi_skip"] = "交出摸牌阶段",
   ["@bo__dansi_draw"] = "获赠摸牌阶段",
-  ["@bo__dansi_duanchang"] = "待断肠",
+  ["@bo__dansi_duanchang"] = "断肠回合角色",
   ["#bo__dansi-transfer"] = "%from 因“%arg”将下个摸牌阶段交给 %to",
 }
 

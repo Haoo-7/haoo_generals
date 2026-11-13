@@ -10,6 +10,7 @@ W.revealed = "@@bo__dansi-inhand"
 W.skip_draw = "@bo__dansi_skip"
 W.extra_draw = "@bo__dansi_draw"
 W.backwater = "@bo__dansi_duanchang"
+W.silenced = "bo__dansi_silenced"
 
 function W.removeBorrowed(player)
   local names = player:getTableMark(W.granted)
@@ -48,13 +49,17 @@ function W.beginTurn(room, current)
   for _, player in ipairs(room.players) do
     room:setPlayerMark(player, W.gained, 0)
     room:setPlayerMark(player, W.involved, 0)
+    W.settleBackwater(player, current.id)
   end
   for _, player in ipairs(room.players) do W.syncSkills(player) end
 end
 
 function W.endTurn(room)
   room:setTag(W.turn_tag, nil)
-  for _, player in ipairs(room.players) do W.removeBorrowed(player) end
+  for _, player in ipairs(room.players) do
+    W.removeBorrowed(player)
+    room:setPlayerMark(player, W.silenced, 0)
+  end
 end
 
 function W.gainedCards(player, moves)
@@ -66,21 +71,16 @@ function W.gainedCards(player, moves)
   end) ~= nil
 end
 
-function W.loseGeneralSkills(player)
-  local room = player.room
-  room:setPlayerMark(player, W.backwater, 0)
-  W.removeBorrowed(player)
-  local names = {}
-  for _, name in ipairs(player:getSkillNameList()) do
-    if not Fk.skill_skels[name].mode_skill then table.insert(names, "-" .. name) end
-  end
-  if #names > 0 then room:handleAddLoseSkills(player, names) end
+function W.settleBackwater(player, currentId)
+  player.room:setPlayerMark(player, W.silenced,
+    currentId and table.contains(player:getTableMark(W.backwater), currentId) and 1 or 0)
 end
 
-function W.settleBackwater(player)
-  if player:getMark(W.backwater) > 0 and player.room:getTag(W.turn_tag) == player.id then
-    W.loseGeneralSkills(player)
-  end
+function W.requestBackwater(player, victim)
+  local victims = player:getTableMark(W.backwater)
+  table.insertIfNeed(victims, victim.id)
+  player.room:setPlayerMark(player, W.backwater, victims)
+  W.settleBackwater(player, player.room:getTag(W.turn_tag))
 end
 
 function W.redCards(player)
@@ -154,6 +154,16 @@ function W.giveDrawPhase(room, from, to)
   room:sendLog { type = "#bo__dansi-transfer", from = from.id, to = { to.id }, arg = "bo__dansi" }
 end
 
+function W.paymentChoices(victim, x)
+  local choices = {}
+  local canGiveCards = #W.revealedCards(victim) >= x
+  local canGivePhase = victim:getMark(W.skip_draw) == 0
+  if canGiveCards then table.insert(choices, "bo__dansi-cards") end
+  if canGivePhase then table.insert(choices, "bo__dansi-phase") end
+  if canGiveCards and canGivePhase then table.insert(choices, "bo__dansi-backwater") end
+  return choices
+end
+
 function W.resolve(room, player, use, x)
   -- UseCardData wraps the original specification; damageDealt is written
   -- back to this table. Room:useCard itself returns a boolean/nil.
@@ -167,31 +177,27 @@ function W.resolve(room, player, use, x)
   end
   room:sortByAction(victims)
   if #victims == 0 then return end
-  local backwater = room:askToChoice(player, {
-    choices = { "bo__dansi-normal", "bo__dansi-backwater" },
-    skill_name = "bo__dansi",
-    prompt = "#bo__dansi-backwater",
-  }) == "bo__dansi-backwater"
-  if backwater then room:setPlayerMark(player, W.backwater, 1) end
   for _, victim in ipairs(victims) do
     if player.dead then break end
-    if not victim.dead then
-      local choice
-      if not backwater then
-        local choices = { "bo__dansi-phase" }
-        if #W.revealedCards(victim) >= x then table.insert(choices, 1, "bo__dansi-cards") end
-        choice = room:askToChoice(victim, {
-          choices = choices,
-          all_choices = { "bo__dansi-cards", "bo__dansi-phase" },
-          skill_name = "bo__dansi",
-          prompt = "#bo__dansi-pay::" .. player.id .. ":" .. x,
-        })
+    local choices = W.paymentChoices(victim, x)
+    if not victim.dead and #choices > 0 then
+      local choice = room:askToChoice(victim, {
+        choices = choices,
+        all_choices = { "bo__dansi-cards", "bo__dansi-phase", "bo__dansi-backwater" },
+        skill_name = "bo__dansi",
+        prompt = "#bo__dansi-pay::" .. player.id .. ":" .. x,
+      })
+      if choice == "bo__dansi-cards" or choice == "bo__dansi-backwater" then
+        W.giveCards(room, victim, player, x)
       end
-      if backwater or choice == "bo__dansi-cards" then W.giveCards(room, victim, player, x) end
-      if backwater or choice == "bo__dansi-phase" then W.giveDrawPhase(room, victim, player) end
+      if choice == "bo__dansi-phase" or choice == "bo__dansi-backwater" then
+        W.giveDrawPhase(room, victim, player)
+      end
+      if choice == "bo__dansi-backwater" then
+        W.requestBackwater(player, victim)
+      end
     end
   end
-  W.settleBackwater(player)
 end
 
 return W
