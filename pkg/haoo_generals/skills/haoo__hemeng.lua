@@ -5,7 +5,7 @@ local hemeng = fk.CreateSkill {
 
 Fk:loadTranslationTable {
   ["haoo__hemeng"] = "和梦",
-  [":haoo__hemeng"] = "觉醒技，当你于一回合内同时触发“通南”的①②项后，你获得游戏胜利。",
+  [":haoo__hemeng"] = "当你于一回合内同时触发“通南”的①②项后，你获得游戏胜利。",
 }
 
 -- 南梁一觉：〖和梦〗是〖通南〗的相关技能（related_skills），永不作为真实技能授予。
