@@ -7,6 +7,9 @@ Fk:loadTranslationTable {
   ["haoo_generals"] = "铁群新设",
   ["haoo"] = "铁",
   ["zheng"] = "蒸",
+  ["hg_tie"] = "铁",
+  ["hg"] = "洪轨",
+  ["lz"] = "浪子",
 
   ["haoo__hongkainan"] = "洪凯南",
   ["#haoo__hongkainan"] = "那个男人入",
@@ -30,6 +33,48 @@ Fk:loadTranslationTable {
   ["illustrator:haoo__hongkainan2"] = "KayaK&Haoo",
   ["~haoo__hongkainan2"] = "年愁今夜未到乡，卧思可哀晓南梁",
 
+  ["hg__tao"] = "涛",
+  ["#hg__tao"] = "洪轨",
+  ["designer:hg__tao"] = "用户自制",
+  ["cv:hg__tao"] = "暂无",
+  ["illustrator:hg__tao"] = "暂无",
+  ["~hg__tao"] = "",
+
+  ["lz__nanmingbi"] = "南明毕",
+  ["#lz__nanmingbi"] = "浪子",
+  ["designer:lz__nanmingbi"] = "用户自制",
+  ["cv:lz__nanmingbi"] = "暂无",
+  ["illustrator:lz__nanmingbi"] = "用户提供",
+  ["~lz__nanmingbi"] = "",
+
+  ["sha__guozhou"] = "殺郭周",
+  ["#sha__guozhou"] = "阖智议魏",
+  ["designer:sha__guozhou"] = "用户自制",
+  ["cv:sha__guozhou"] = "暂无",
+  ["illustrator:sha__guozhou"] = "暂无",
+  ["~sha__guozhou"] = "",
+
+  ["bo__wushilin"] = "吾是琳",
+  ["#bo__wushilin"] = "搏",
+  ["designer:bo__wushilin"] = "用户自制",
+  ["cv:bo__wushilin"] = "暂无",
+  ["illustrator:bo__wushilin"] = "暂无",
+  ["~bo__wushilin"] = "",
+
+  ["azk__aizhake"] = "艾扎客",
+  ["#azk__aizhake"] = "执杖曾翻嵘",
+  ["designer:azk__aizhake"] = "用户自制",
+  ["cv:azk__aizhake"] = "暂无",
+  ["illustrator:azk__aizhake"] = "暂无",
+  ["~azk__aizhake"] = "",
+
+  ["bo__zengyixiong"] = "曾奕雄",
+  ["#bo__zengyixiong"] = "一世之雄",
+  ["designer:bo__zengyixiong"] = "Haoo",
+  ["cv:bo__zengyixiong"] = "暂无",
+  ["illustrator:bo__zengyixiong"] = "铭zmy",
+  ["~bo__zengyixiong"] = "",
+
   ["ts__yuji"] = "于吉",
   ["#ts__yuji"] = "惑乱人心",
   ["designer:ts__yuji"] = "自制",
@@ -50,19 +95,7 @@ Fk:loadTranslationTable {
   ["cv:ts__lin"] = "自制",
   ["illustrator:ts__lin"] = "自制",
   ["~ts__lin"] = "技多不压身，可惜我只有这一招……",
-}
 
-General:new(extension, "haoo__hongkainan", "zheng", 4):addSkills { "haoo__jiangli" }
-General:new(extension, "haoo__hongkainan2", "zheng", 4):addSkills { "haoo__tongnan" }
-General:new(extension, "haoo__wanglei", "zheng", 3):addSkills { "haoo__xuanjian", "haoo__shijie" }
-General:new(extension, "haoo__chenjinkun", "zheng", 4):addSkills {
-  "haoo__shenkun", "haoo__yangjing", "haoo__xianzhe", "haoo__wuyi",
-}
-General:new(extension, "ts__lin", "haoo", 3):addSkills { "ts__jiba", "ts__pojie" }
-General:new(extension, "ts__yuji", "qun", 3):addSkills { "ts__nanbian", "ts__shifei", "ts__mengyan" }
-General:new(extension, "ts__jiekang", "wei", 3):addSkills { "ts__zuilin", "ts__feihua", "ts__shiwai" }
-
-Fk:loadTranslationTable {
   ["ts__lin_sp"] = "SP 琳",
   ["#ts__lin_sp"] = "狂赌之渊",
   ["designer:ts__lin_sp"] = "自制",
@@ -97,6 +130,40 @@ Fk:loadTranslationTable {
   ["#ts__sheyi-dying"] = "奢易：是否回复1点体力，令其失去1点体力，并承担2点体力债务？",
 }
 
+General:new(extension, "haoo__hongkainan", "zheng", 4):addSkills { "haoo__jiangli" }
+General:new(extension, "haoo__hongkainan2", "zheng", 4):addSkills { "haoo__tongnan" }
+General:new(extension, "haoo__wanglei", "zheng", 3):addSkills { "haoo__xuanjian", "haoo__shijie" }
+General:new(extension, "haoo__chenjinkun", "zheng", 4):addSkills {
+  "haoo__shenkun", "haoo__yangjing", "haoo__xianzhe", "haoo__wuyi",
+}
+General:new(extension, "hg__tao", "hg_tie", 4, 4):addSkills {
+  "hg__yuanqi", "hg__dongshen", "hg__chaowei",
+}
+General:new(extension, "lz__nanmingbi", "hg_tie", 4, 4):addSkills {
+  "lz__jiangli", "lz__luguan",
+}
+local guozhou = General:new(extension, "sha__guozhou", "hg_tie", 4, 4, General.Male)
+-- 殺郭周 is the full name; 殺 is not an edition prefix.
+guozhou.prefix = nil
+guozhou:addSkills {
+  "sha__jimi", "sha__manbo", "sha__jiahao",
+}
+local wushilin = General:new(extension, "bo__wushilin", "hg_tie", 4, 4)
+wushilin.prefix = nil
+wushilin:addSkills { "bo__jige", "bo__dansi" }
+wushilin:addRelatedSkills { "jiang", "jiyuan", "shenji", "quanji", "wusheng" }
+local aizhake = General:new(extension, "azk__aizhake", "hg_tie", 4, 4)
+aizhake.prefix = nil
+aizhake:addSkills { "azk__xingye", "azk__mangren" }
+aizhake:addRelatedSkills { "azk__qixing" }
+local zengyixiong = General:new(extension, "bo__zengyixiong", "wei", 4, 4)
+zengyixiong.prefix = nil
+zengyixiong:addSkills { "bo__xiongbian", "bo__xiongqi" }
+zengyixiong:addRelatedSkills { "paoxiao", "benxi", "zhuhai" }
+
+General:new(extension, "ts__lin", "haoo", 3):addSkills { "ts__jiba", "ts__pojie" }
+General:new(extension, "ts__yuji", "qun", 3):addSkills { "ts__nanbian", "ts__shifei", "ts__mengyan" }
+General:new(extension, "ts__jiekang", "wei", 3):addSkills { "ts__zuilin", "ts__feihua", "ts__shiwai" }
 General:new(extension, "ts__lin_sp", "haoo", 3):addSkills { "ts__duidu", "ts__tianming", "ts__sheyi" }
 
 return extension
