@@ -165,7 +165,9 @@ skill:addEffect(fk.EventPhaseEnd, {
 
 Fk:loadTranslationTable {
   ["lz__jiangli"] = "桨励",
-  [":lz__jiangli"] = "准备阶段，你可整肃以对自己造成一点伤害，若你成功：擂进/鸣止，可双倍摸牌/回复体力。",
+  [":lz__jiangli"] = "准备阶段，你可<b>整肃</b>以对自己造成一点伤害，若你成功：" ..
+    "<font color='#CC3131'>擂进</font>/<font color='#307020'>鸣止</font>，" ..
+    "可双倍<font color='#CC3131'>摸牌</font>/<font color='#307020'>回复体力</font>。",
   [choice_mark] = "桨励",
   ["lz__jiangli_leijin"] = "擂进",
   [":lz__jiangli_leijin"] = "出牌阶段内，至少使用3张有点数的牌，其点数严格递增。成功后可摸4张牌或回复1点体力。",
