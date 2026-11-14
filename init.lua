@@ -6,6 +6,7 @@ local wushilin = require "packages.haoo_generals.pkg.wushilin"
 local aizhake = require "packages.haoo_generals.pkg.aizhake"
 local zengyixiong = require "packages.haoo_generals.pkg.zengyixiong"
 require("packages.haoo_generals.guozhou_client")(Client or Fk.Base.ClientBase)
+require("packages.haoo_generals.hongkainan_client")(Client or Fk.Base.ClientBase)
 
 Fk:loadTranslationTable {
   ["haoo_generals"] = "铁群新设",
