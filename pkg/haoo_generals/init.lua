@@ -24,6 +24,12 @@ Fk:loadTranslationTable {
   ["designer:haoo__chenjinkun"] = "Haoo&卝二",
   ["~haoo__chenjinkun"] = "小撸怡情，大撸伤身，强撸灰飞烟灭！",
 
+  ["haoo__hongkainan2"] = "洪楷南",
+  ["#haoo__hongkainan2"] = "南樂一覺",
+  ["designer:haoo__hongkainan2"] = "Haoo",
+  ["illustrator:haoo__hongkainan2"] = "KayaK&Haoo",
+  ["~haoo__hongkainan2"] = "年愁今夜未到乡，卧思可哀晓南梁",
+
   ["ts__yuji"] = "于吉",
   ["#ts__yuji"] = "惑乱人心",
   ["designer:ts__yuji"] = "自制",
@@ -47,6 +53,7 @@ Fk:loadTranslationTable {
 }
 
 General:new(extension, "haoo__hongkainan", "zheng", 4):addSkills { "haoo__jiangli" }
+General:new(extension, "haoo__hongkainan2", "zheng", 4):addSkills { "haoo__tongnan" }
 General:new(extension, "haoo__wanglei", "zheng", 3):addSkills { "haoo__xuanjian", "haoo__shijie" }
 General:new(extension, "haoo__chenjinkun", "zheng", 4):addSkills {
   "haoo__shenkun", "haoo__yangjing", "haoo__xianzhe", "haoo__wuyi",
