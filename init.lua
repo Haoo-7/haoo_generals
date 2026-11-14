@@ -4,6 +4,7 @@ local langzi = require "packages.haoo_generals.pkg.langzi"
 local guozhou = require "packages.haoo_generals.pkg.guozhou"
 local wushilin = require "packages.haoo_generals.pkg.wushilin"
 local aizhake = require "packages.haoo_generals.pkg.aizhake"
+local zengyixiong = require "packages.haoo_generals.pkg.zengyixiong"
 require("packages.haoo_generals.guozhou_client")(Client or Fk.Base.ClientBase)
 
 Fk:loadTranslationTable {
@@ -16,4 +17,4 @@ Fk:addPostLoadFunc(function()
   Fk:loadTranslationTable { ["@@tongqu"] = "渠" }
 end)
 
-return { extension, tao, langzi, guozhou, wushilin, aizhake }
+return { extension, tao, langzi, guozhou, wushilin, aizhake, zengyixiong }
