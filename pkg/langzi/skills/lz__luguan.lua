@@ -75,7 +75,8 @@ skill:addEffect("invalidity", {
 
 Fk:loadTranslationTable {
   ["lz__luguan"] = "橹冠",
-  [":lz__luguan"] = "锁定技 你每回合第x次受到伤害后，红色牌视为<br>①决斗②火攻③兵临城下",
+  [":lz__luguan"] = "锁定技 你每回合第x次受到伤害后，<font color='#CC3131'>红色牌</font>视为<br>" ..
+    "①<b>决斗</b>②<b>火攻</b>③<b>兵临城下</b>",
   [mark] = "橹冠",
 }
 
