@@ -46,7 +46,7 @@ Fk:loadTranslationTable {
 }
 
 General:new(extension, "haoo__hongkainan", "zheng", 4):addSkills { "haoo__jiangli" }
-General:new(extension, "haoo__hongkainan2", "zheng", 4):addSkills { "haoo__tongnan", "haoo__hemeng" }
+General:new(extension, "haoo__hongkainan2", "zheng", 4):addSkills { "haoo__tongnan" }
 General:new(extension, "haoo__wanglei", "zheng", 3):addSkills { "haoo__xuanjian", "haoo__shijie" }
 General:new(extension, "haoo__chenjinkun", "zheng", 4):addSkills {
   "haoo__shenkun", "haoo__yangjing", "haoo__xianzhe", "haoo__wuyi",
