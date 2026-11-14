@@ -4,10 +4,10 @@ local shijie = fk.CreateSkill {
 
 Fk:loadTranslationTable {
   ["haoo__shijie"] = "矢节",
-  [":haoo__shijie"] = "当你进入濒死状态时，你弃置所有牌并选择一名获得过“谏”的角色，其须依次弃置X张牌；" ..
-    "若其以此法失去所有牌，你与其各失去1点体力；若其以此法弃置的牌数之和小于X，你再次发动【矢节】" ..
+  [":haoo__shijie"] = "当你进入濒死状态时，你可弃置所有牌并选择一名得到过“谏”的角色，其须依次弃置X张牌；" ..
+    "若其以此法失去所有牌，你与其各失去1点体力；若其以此法弃置的牌数小于X，你发动〖矢节〗" ..
     "（X为你本局游戏弃置的牌数）。",
-  ["#haoo__shijie-choose"] = "矢节：请选择一名获得过“谏”的角色",
+  ["#haoo__shijie-choose"] = "矢节：请选择一名得到过“谏”的角色",
   ["#haoo__shijie-discard"] = "矢节：请依次弃置一张牌（%src 进入濒死，须弃置X张）",
   ["$haoo__shijie1"] = "如谏不从，吾自悬死于此！",
 }
@@ -67,7 +67,8 @@ shijie:addEffect(fk.EnterDying, {
       local X = player:getMark(DISCARD_COUNT_MARK)
       if X <= 0 then break end
       local candidates = table.filter(room.alive_players, function(p)
-        return p:getMark("haoo__got_jian") > 0 and not table.contains(processed, p.id)
+        return p ~= player and p:getMark("haoo__got_jian") > 0 and
+          not table.contains(processed, p.id)
       end)
       if #candidates == 0 then break end
       local tos = room:askToChoosePlayers(player, {
