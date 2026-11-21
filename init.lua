@@ -1,4 +1,4 @@
-local extension = require "packages.haoo_generals.pkg.haoo_generals"
+local extensions = require "packages.haoo_generals.pkg.haoo_generals"
 require("packages.haoo_generals.guozhou_client")(Client or Fk.Base.ClientBase)
 if Client then
   require("packages.haoo_generals.hongkainan_client")(Client)
@@ -14,4 +14,4 @@ Fk:addPostLoadFunc(function()
   Fk:loadTranslationTable { ["@@tongqu"] = "渠" }
 end)
 
-return { extension }
+return { extensions[1], extensions[2] }

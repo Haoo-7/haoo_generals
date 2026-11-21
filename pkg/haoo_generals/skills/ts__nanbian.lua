@@ -13,6 +13,8 @@ Fk:loadTranslationTable{
 
   ["@ts__nanbian_dmg-turn"] = "难辩",
   ["@@ts__nanbian-inhand"] = "难辩",
+  ["@@ts__nanbian-inarea"] = "难辩",
+  ["@ts__nanbian"] = "难辩",
 }
 
 local U = require "packages.utility.utility"
@@ -25,10 +27,47 @@ end
 
 local function obtainShade(room, player, n)
   local ids = U.getShade(room, n)
-  room:moveCardTo(ids, Card.PlayerHand, player, fk.ReasonJustMove, nanbian.name, nil, true, player)
-  for _, id in ipairs(ids) do
-    room:setCardMark(Fk:getCardById(id), "@@ts__nanbian-inhand", 1)
-  end
+  -- Applied by the move itself, before any nested AfterCardsMove transfer.
+  room:moveCardTo(ids, Card.PlayerHand, player, fk.ReasonJustMove, nanbian.name, nil, true, player,
+    { "@@ts__nanbian-inarea", { Card.PlayerHand } })
+end
+
+local function isNanbianShade(card)
+  local areas = card:getMark("@@ts__nanbian-inarea")
+  return type(areas) == "table" and table.contains(areas, Card.PlayerHand)
+end
+
+-- Refresh once per event, even when seat 1 is dead or nobody owns Nanbian.
+for _, refresh_event in ipairs({ fk.GameStart, fk.AfterCardsMove }) do
+  nanbian:addEffect(refresh_event, {
+    global = true,
+    can_refresh = function(self, event, target, player, data)
+      return player.seat == 1
+    end,
+    on_refresh = function(self, event, target, player, data)
+      local room = player.room
+      -- moveMark is applied AFTER the engine's -inarea cleanup. A move
+      -- redirected from Void can therefore acquire this tag outside Hand.
+      -- Check the actual area (not the original destination or owner), so
+      -- nested hand-to-hand transfers keep their source tag.
+      if event == fk.AfterCardsMove then
+        for _, move in ipairs(data) do
+          for _, info in ipairs(move.moveInfo) do
+            local card = Fk:getCardById(info.cardId)
+            if room:getCardArea(info.cardId) ~= Card.PlayerHand and isNanbianShade(card) then
+              room:setCardMark(card, "@@ts__nanbian-inarea", 0)
+            end
+          end
+        end
+      end
+      for _, p in ipairs(room.players) do
+        local n = #getShadeIds(p)
+        if p:getMark("@ts__nanbian") ~= n then
+          room:setPlayerMark(p, "@ts__nanbian", n)
+        end
+      end
+    end,
+  })
 end
 
 nanbian:addEffect(fk.TurnStart, {
@@ -115,13 +154,13 @@ nanbian:addEffect(fk.TurnStart, {
 
 nanbian:addEffect("maxcards", {
   exclude_from = function(self, player, card)
-    return card:getMark("@@ts__nanbian-inhand") > 0
+    return isNanbianShade(card)
   end,
 })
 
 nanbian:addEffect("prohibit", {
   prohibit_discard = function(self, player, card)
-    return player.phase == Player.Discard and card:getMark("@@ts__nanbian-inhand") > 0
+    return player.phase == Player.Discard and isNanbianShade(card)
   end,
 })
 
@@ -135,5 +174,41 @@ nanbian:addEffect(fk.DamageCaused, {
     data:changeDamage(1)
   end,
 })
+
+nanbian:addTest(function(room, me)
+  local other = room.players[2]
+  local mark = "@@ts__nanbian-inarea"
+  local shade = Fk:getCardById(U.getShade(room, 1)[1])
+  FkTest.runInRoom(function()
+    -- Sealed Hand rejects a newly printed Void shade before arrival.
+    room:abortPlayerArea(me, Player.HandSlot)
+    obtainShade(room, me, 1)
+    lu.assertEquals(room:getCardArea(shade.id), Card.Void)
+    lu.assertEquals(shade:getMark(mark), 0)
+    room:resumePlayerArea(me, Player.HandSlot)
+
+    -- Model a BeforeCardsMove redirect retaining moveMark: cleanup runs
+    -- before moveMark, so a Void-to-Void move used to leak the Hand tag.
+    room:moveCards{
+      ids = { shade.id }, toArea = Card.Void,
+      moveReason = fk.ReasonJustMove, skillName = nanbian.name,
+      moveMark = { mark, { Card.PlayerHand } },
+    }
+    lu.assertEquals(room:getCardArea(shade.id), Card.Void)
+    lu.assertEquals(shade:getMark(mark), 0)
+
+    -- Ordinary getShade reuse must not inherit Nanbian's source tag.
+    local reused = U.getShade(room, 1)
+    lu.assertEquals(reused, { shade.id })
+    room:moveCardTo(reused, Card.PlayerHand, me, fk.ReasonJustMove)
+    lu.assertEquals(shade:getMark(mark), 0)
+
+    room:setCardMark(shade, mark, { Card.PlayerHand })
+    room:moveCardTo(shade.id, Card.PlayerHand, other, fk.ReasonGive)
+    lu.assertEquals(shade:getMark(mark), { Card.PlayerHand })
+    room:moveCardTo(shade.id, Card.Void, nil, fk.ReasonJustMove)
+    lu.assertEquals(shade:getMark(mark), 0)
+  end)
+end)
 
 return nanbian
