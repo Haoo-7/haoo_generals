@@ -1,10 +1,17 @@
 local extension = Package:new("haoo_generals")
 extension.extensionName = "haoo_generals"
 
+local luanze = Package:new("haoo_luanze")
+luanze.extensionName = "haoo_generals"
+if Client then
+  require("packages.haoo_generals.sp_lin_client")(Client)
+end
+
 extension:loadSkillSkelsByPath("./packages/haoo_generals/pkg/haoo_generals/skills")
 
 Fk:loadTranslationTable {
   ["haoo_generals"] = "铁群新设",
+  ["haoo_luanze"] = "乱泽",
   ["haoo"] = "铁",
   ["zheng"] = "蒸",
   ["hg_tie"] = "铁",
@@ -103,16 +110,18 @@ Fk:loadTranslationTable {
   ["illustrator:ts__lin"] = "自制",
   ["~ts__lin"] = "技多不压身，可惜我只有这一招……",
 
-  ["ts__lin_sp"] = "SP 琳",
-  ["#ts__lin_sp"] = "狂赌之渊",
+  ["ts__lin_sp"] = "琳",
+  ["#ts__lin_sp"] = "狂徒之渊",
   ["designer:ts__lin_sp"] = "自制",
   ["cv:ts__lin_sp"] = "待定",
-  ["illustrator:ts__lin_sp"] = "待定",
+  ["illustrator:ts__lin_sp"] = "ShapByAI&gpt",
   ["~ts__lin_sp"] = "这一次，连命运也输掉了……",
   ["ts__duidu"] = "对赌",
   [":ts__duidu"] = "出牌阶段，你可选择一名其他角色并声明X（X至少为一且不大于双方能支付的数量；牌为手牌与装备区的牌数，对方的体力上限可支付数为空勾玉数），然后选择一项：1.弃置X张牌；2.失去X点体力；3.减X点体力上限（最少保留1点）。其选择是否接受。若其接受，其支付等量的牌、体力或体力上限，然后你与其依次亮出牌堆顶的一张牌并置入弃牌堆，点数相同则重复此流程，点数较大者获得本次双方以此法弃置在弃牌堆的牌，或回复2X点体力，或加2X点体力上限。",
+  ["ts__lin_ming"] = "命",
+  [":ts__tianming_awakened"] = "大于天。",
   ["ts__tianming"] = "天命",
-  [":ts__tianming"] = "出牌阶段，每项限一次，你可声明X（X为1至5的整数），选择一项：1.摸X张牌；2.回复X点体力；3.加X点体力上限。然后你本回合接下来的X次〖对赌〗不能被拒绝。你于下一个出牌阶段开始时，弃置2X张手牌、失去2X点体力或减2X点体力上限（对应你此前选择的项）；若本回合〖对赌〗未达到X次，则于此回合结束时立即执行。",
+  [":ts__tianming"] = "觉醒技，回合开始时，若当场上其余势力数不大于2，且有角色因【天劫】死亡，你删除所有划线字符。",
   ["ts__sheyi"] = "奢易",
   [":ts__sheyi"] = "其他角色的出牌阶段开始时，其可获得你任意张手牌或装备区的牌。若如此做，其本回合对你造成的伤害被防止，且其此后获得的牌须交给你，直到累计交给你本次获得牌数两倍的牌。其他角色进入濒死状态时，若你的体力值大于0，其可获得你1点体力（每名角色每回合限一次）。若如此做，其本回合对你造成的伤害被防止，且你于回合开始时收回其2点体力。当你进入濒死状态时，所有欠你体力债的角色立即交给你相应的体力。",
   ["ts__bet_cards"] = "牌",
@@ -190,25 +199,25 @@ zengyixiong:addSkills { "bo__xiongbian", "bo__xiongqi" }
 zengyixiong:addRelatedSkills { "paoxiao", "benxi", "zhuhai" }
 
 -- 角标（prefix）默认取 id 中 "__" 之前的部分（此处为 ts），自制的 ts 系武将改成称号
-local lin = General:new(extension, "ts__lin", "haoo", 3)
+local lin = General:new(luanze, "ts__lin", "haoo", 3)
 lin.prefix = "周好"
 -- 与殺郭周（sha__guozhou）互为同名武将
 lin.trueName = "guozhou"
 lin:addSkills { "ts__jiba", "ts__pojie" }
 
-local yuji = General:new(extension, "ts__yuji", "qun", 3)
+local yuji = General:new(luanze, "ts__yuji", "qun", 3)
 yuji.prefix = "惑乱人心"
 yuji:addSkills { "ts__nanbian", "ts__shifei", "ts__mengyan" }
 
-local jiekang = General:new(extension, "ts__jiekang", "wei", 3)
+local jiekang = General:new(luanze, "ts__jiekang", "wei", 3)
 jiekang.prefix = "竹林名士"
 jiekang:addSkills { "ts__shiwai", "ts__feihua", "ts__zuilin" }
 
-local lin_sp = General:new(extension, "ts__lin_sp", "haoo", 3)
-lin_sp.prefix = "狂赌之渊"
+local lin_sp = General:new(luanze, "ts__lin_sp", "haoo", 3, 4)
+lin_sp.prefix = "狂徒之渊"
 -- 与吾是琳（bo__wushilin）互为同名武将
 lin_sp.trueName = "wushilin"
-lin_sp:addSkills { "ts__duidu", "ts__tianming", "ts__sheyi" }
+lin_sp:addSkills { "ts__tianjie", "ts__tianhou", "ts__tiansi", "ts__tianming" }
 
 local fuban = General:new(extension, "fb__fuban", "god", 3, 3, General.Male)
 fuban.subkingdom = "hg_tie"
@@ -217,11 +226,11 @@ fuban:addSkills { "fb__hufu", "fb__bangban" }
 fuban:addRelatedSkills { "fb__yingzi" }
 
 -- 皇（原测试集 huang_test 并入）；角标同样改成称号
-local huang = General:new(extension, "huang__huang", "haoo", 3, 3, General.Male)
+local huang = General:new(luanze, "huang__huang", "haoo", 3, 3, General.Male)
 huang.prefix = "仙瑞"
 huang:addSkills { "huang__daoshi", "huang__luoze" }
 
-local cha = General:new(extension, "cha__cha", "haoo", 3, 3)
+local cha = General:new(luanze, "cha__cha", "haoo", 3, 3)
 cha.prefix = "临颧"
 cha:addSkills { "cha__beizhi", "cha__bifa", "cha__jiaji", "cha__zhengdu" }
 cha:addRelatedSkills { "cha__jinghua" }
@@ -231,4 +240,4 @@ Fk:loadTranslationTable {
   ["临颧"] = "临颧",
 }
 
-return extension
+return { extension, luanze }

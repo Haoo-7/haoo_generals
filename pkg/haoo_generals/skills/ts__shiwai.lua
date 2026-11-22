@@ -10,6 +10,32 @@ Fk:loadTranslationTable {
   ["#ts__shiwai-yin"] = "世外：你可以废除你的判定区，恢复你的手牌区",
 }
 
+Fk:loadTranslationTable {
+  ["@@ts__shiwai-hand"] = "手牌区已废除",
+  ["@@ts__shiwai-judge"] = "判定区已废除",
+}
+
+-- Follow actual area state, including external restoration and skill loss.
+for _, refresh_event in ipairs({
+  fk.GameStart, fk.AreaAborted, fk.AreaResumed, fk.EventAcquireSkill, fk.EventLoseSkill,
+}) do
+  shiwai:addEffect(refresh_event, {
+    global = true,
+    can_refresh = function(self, event, target, player, data)
+      return (event == fk.GameStart or target == player) and
+        (player:hasSkill(shiwai.name, true) or player:hasSkill("ts__zuilin", true) or
+          player:getMark("@@ts__shiwai-hand") ~= 0 or player:getMark("@@ts__shiwai-judge") ~= 0 or
+          (event == fk.EventLoseSkill and data and data.skill and
+            (data.skill.name == shiwai.name or data.skill.name == "ts__zuilin")))
+    end,
+    on_refresh = function(self, event, target, player, data)
+      local room = player.room
+      room:setPlayerMark(player, "@@ts__shiwai-hand", player:isHandAreaSealed() and 1 or 0)
+      room:setPlayerMark(player, "@@ts__shiwai-judge", player:isJudgeAreaSealed() and 1 or 0)
+    end,
+  })
+end
+
 shiwai:addEffect(fk.EventPhaseStart, {
   anim_type = "switch",
   can_trigger = function(self, event, target, player, data)
