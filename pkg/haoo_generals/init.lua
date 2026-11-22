@@ -240,4 +240,28 @@ Fk:loadTranslationTable {
   ["临颧"] = "临颧",
 }
 
+Fk:loadTranslationTable {
+  ["haoo__linchengyuan"] = "林承源",
+  ["#haoo__linchengyuan"] = "伤春悲秋",
+  ["designer:haoo__linchengyuan"] = "Haoo",
+  ["cv:haoo__linchengyuan"] = "暂无",
+  ["illustrator:haoo__linchengyuan"] = "凡果",
+  ["~haoo__linchengyuan"] = "",
+  ["haoo2__linchengyuan"] = "林承源",
+  ["#haoo2__linchengyuan"] = "伤春悲秋",
+  ["designer:haoo2__linchengyuan"] = "Haoo",
+  ["cv:haoo2__linchengyuan"] = "暂无",
+  ["illustrator:haoo2__linchengyuan"] = "凡果",
+  ["~haoo2__linchengyuan"] = "",
+}
+
+local linchengyuan = General:new(extension, "haoo__linchengyuan", "haoo", 3, 4, General.Male)
+linchengyuan.prefix = nil
+linchengyuan:addSkills { "haoo__rongku", "haoo__fengchun" }
+
+local linchengyuan2 = General:new(extension, "haoo2__linchengyuan", "haoo", 3, 4, General.Male)
+linchengyuan2.prefix = nil
+linchengyuan2.total_hidden = true
+linchengyuan2:addSkills { "haoo__rongku", "haoo__fengchun" }
+
 return { extension, luanze }
