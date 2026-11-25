@@ -6,8 +6,11 @@ local F = {
 
 function F.installKingdomChoice(engine)
   if engine.fb__fuban_kingdom_choice then return end
-  engine.fb__fuban_kingdom_choice = true
   local original = engine.getKingdomsNeedToChoose
+  -- Older cores choose dual kingdoms directly and do not expose this method.
+  -- Leave their native path untouched; never capture a noncallable fallback.
+  if type(original) ~= "function" then return end
+  engine.fb__fuban_kingdom_choice = true
   -- The native chooser appends God's four mapped kingdoms even for a
   -- dual-kingdom general. Override only Fuban, on both client and server.
   engine.getKingdomsNeedToChoose = function(self, name)

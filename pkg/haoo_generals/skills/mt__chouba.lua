@@ -41,10 +41,17 @@ local spec = {
     if to.dead or hasJudged(room, to) then return end
     local judge = { who = to, reason = skill.name, pattern = "." }
     room:judge(judge)
-    -- Interrupted judgments have no valid result; normal Tiandu may already
-    -- have taken the card, so read its final suit regardless of current area.
-    local card = rawget(judge, "card")
-    if not judge.results or #judge.results == 0 or not card or player.dead then return end
+    -- Results can already be filled when FinishJudge interrupts the event.
+    -- Match this exact spec through TriggerData's backing table; the newest
+    -- Judge may belong to a nested skill. Never read a broken wrapper's card.
+    local judged = room.logic:getEventsOfScope(GameEvent.Judge, 1, function(e)
+      return e.data == judge or rawget(e.data, "_data") == judge
+    end, Player.HistoryTurn)[1]
+    if not judged or judged.interrupted or player.dead then return end
+    local result = judged.data
+    local card = result.card
+    if not result.results or #result.results == 0 or not card then return end
+    -- Tiandu may have taken the card normally; its final suit remains valid.
     if not table.contains({ Card.Spade, Card.Heart, Card.Club, Card.Diamond }, card.suit) then return end
     local suit = card:getSuitString(true)
     local suits = to:getTableMark(M.suits)
