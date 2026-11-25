@@ -26,6 +26,18 @@
 
 ## 验证与实现范围
 
+### 天嫉胜负接口核对（2026-11-25）
+
+已核对官方 FreeKill `v0.5.25` 发布标签（提交 `671b0ad698c36b703808d8b29f3483ce54b36631`），其接口支持当前玩家数组实现：
+
+- [`Room:gameOver`](https://github.com/Qsgs-Fans/FreeKill/blob/671b0ad698c36b703808d8b29f3483ce54b36631/ltk/server/room.lua#L3657-L3673) 接受 `ServerPlayer[] | Player[] | string`，先将玩家数组或身份字符串转换为玩家 ID 字符串，再调用底层结算。
+- [`ServerRoomBase:victoryResult`](https://github.com/Qsgs-Fans/FreeKill/blob/671b0ad698c36b703808d8b29f3483ce54b36631/lua/server/roombase.lua#L349-L398) 按玩家 ID 计算胜负，底层的 `split` 接收到的是上层转换后的字符串。
+- [客户端 `GameOverModel`](https://github.com/Qsgs-Fans/FreeKill/blob/671b0ad698c36b703808d8b29f3483ce54b36631/LunarLtk/Models/Popups/GameOverModel.qml#L53-L56) 用 `winner.split("+").includes(myId)` 判断胜负，`myId` 为玩家 ID。因此同为忠臣的两人，可以分别因持有与未持有天妒获得不同结果；不能将过滤结果重新拼成身份字符串，否则会丢失个人胜负差异。
+
+官方发布源码与本机 freekill-core `37510743e7ff2f3abdfb134a1cd8d3a40735d748` 各通过 7 个原生结算场景：同身份一胜一败、直接传玩家数组、全部过滤后平局、漠阗获胜时保留天妒队友、死亡角色过滤、失去天妒后恢复资格及原生平局。每项检查结束事件、战报、武将与玩家胜率、广播名单及结束状态；两份 QML 的原始 JavaScript 胜负函数也通过同身份差异和平局检查。
+
+上述验证执行原始 Lua 结算方法及协程结束路径；C++ 网络与持久化、空历史查询和事件派发使用替身，QML 函数通过 Node 执行，未验证实际界面渲染或多人对局。尚未取得实际服务器的核心提交，若服务器使用旧版或修改过的核心，应另行对照源码。review 中“官方 0.5.25 不接受玩家数组”的问题未复现，天嫉保留现有实现。
+
 仅修改自定义扩展。天嫉在本局房间的最终胜负入口过滤胜者，然后调用原生结算，使结果通知、战绩和统计使用相同名单；不改官方包文件，不改模式的胜利条件。
 
 通过真实Lua 5.4语法解析、原生Package/General/Skill注册、原生回复/伤害/失去体力/判定流程测试，以及原生技能来源移除和最终胜负入口测试。交互、网络、部分移牌与濒死救援由测试替身控制。既有六将逻辑回归通过。
