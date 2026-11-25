@@ -264,4 +264,33 @@ linchengyuan2.prefix = nil
 linchengyuan2.total_hidden = true
 linchengyuan2:addSkills { "haoo__rongku", "haoo__fengchun" }
 
+Fk:loadTranslationTable {
+  ["mt__motian"] = "漠阗",
+  ["#mt__motian"] = "魏倚至何",
+  ["designer:mt__motian"] = "用户自制",
+  ["cv:mt__motian"] = "暂无",
+  ["illustrator:mt__motian"] = "用户提供",
+  ["~mt__motian"] = "",
+}
+
+local motian = General:new(extension, "mt__motian", "hg_tie", 4, 4, General.Male)
+motian.prefix = nil
+motian:addSkills { "mt__houfu", "mt__tianji", "mt__chouba" }
+motian:addRelatedSkills { "tiandu" }
+
+Fk:loadTranslationTable {
+  ["slg__shenglugao"] = "胜律皋",
+  ["#slg__shenglugao"] = "魏倚之何",
+  ["designer:slg__shenglugao"] = "用户自制",
+  ["cv:slg__shenglugao"] = "暂无",
+  ["illustrator:slg__shenglugao"] = "用户提供",
+  ["~slg__shenglugao"] = "",
+}
+
+local shenglugao = General:new(extension, "slg__shenglugao", "hg_tie", 4, 4, General.Male)
+shenglugao.prefix = nil
+shenglugao:addSkills { "slg__shaohuo", "slg__maoting" }
+
+require("packages.haoo_generals.fuban").installKingdomChoice(Fk)
+
 return { extension, luanze }
